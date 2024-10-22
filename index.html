@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>calculator</h1>
+    </div>
+    <div class="calculator">
+        <div class="screen" id="screen">
+            <span id="input">0</span>
+            <span id="output"></span>
+        </div>
+        <button onclick="appendToScreen(1)" class="number">1</button>
+        <button onclick="appendToScreen(2)" class="number">2</button>
+        <button onclick="appendToScreen(3)" class="number">3</button>
+        <button onclick="clearScreen()" class="clear">C</button>
+        <button onclick="appendToScreen(4)" class="number">4</button>
+        <button onclick="appendToScreen(5)" class="number">5</button>
+        <button onclick="appendToScreen(6)" class="number">6</button>
+        <button onclick="appendToScreen('-')" class="operator">-</button>
+        <button onclick="appendToScreen(7)" class="number">7</button>
+        <button onclick="appendToScreen(8)" class="number">8</button>
+        <button onclick="appendToScreen('+')" class="operator">+</button>
+        <button onclick="appendToScreen('*')" class="operator">*</button>
+        <button onclick="appendToScreen(9)" class="number">9</button>
+        <button onclick="appendToScreen(0)" class="number">0</button>
+        <button onclick="calculate()" class="equal">=</button>
+        <button onclick="appendToScreen('/')" class="operator">/</button>
+    </div>
+    <div class="container2">
+        <p>Developed by<b> Mr. Aditya Gupta</b></p>
+    </div>
+    <script>
+        let screenValue = '0';
+        const MAX_SCREEN_LENGTH = 29; // Set your desired maximum length
+
+        function appendToScreen(value) {
+            if (screenValue.length < MAX_SCREEN_LENGTH) {
+                if (screenValue === '0' && value !== '.') {
+                    screenValue = value.toString();
+                } else {
+                    screenValue += value.toString();
+                }
+                updateScreen();
+            }
+        }
+
+        function clearScreen() {
+            screenValue = '0';
+            updateScreen();
+        }
+
+        function backspace() {
+            if (screenValue !== '0') {
+                screenValue = screenValue.slice(0, -1);
+                if (screenValue === '') {
+                    screenValue = '0';
+                }
+                updateScreen();
+            }
+        }
+
+        function calculate() {
+            if (screenValue.endsWith('+') || screenValue.endsWith('-') || screenValue.endsWith('*') || screenValue.endsWith('/')) {
+                return; // Prevent calculation if the screen value ends with an operator
+            }
+
+            try {
+                let result = eval(screenValue);
+                if (!isNaN(result) && isFinite(result)) {
+                    screenValue = result.toString();
+                } else {
+                    screenValue = 'Error';
+                }
+                updateScreen();
+            } catch (error) {
+                screenValue = 'Error';
+                updateScreen();
+            }
+        }
+
+        function updateScreen() {
+            document.getElementById('screen').innerText = screenValue;
+        }
+
+        // Event listener for keyboard input
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+
+            if (!isNaN(key) || (key === '.' && screenValue.indexOf('.') === -1)) {
+                appendToScreen(key); // If the key is a number or decimal point and screen length is less than maximum, append it to the screen
+            } else if (['+', '-', '*', '/'].includes(key)) {
+                if (screenValue.length === 1 && screenValue === '-') {
+                    appendToScreen(key); // Allow negative sign only if it's the first character
+                } else if (!screenValue.endsWith('+') && !screenValue.endsWith('-') && !screenValue.endsWith('*') && !screenValue.endsWith('/')) {
+                    appendToScreen(key); // Append the operator to the screen if the screen value doesn't end with an operator
+                }
+            } else if (['Enter', '='].includes(key)) {
+                calculate(); // Calculate the result when Enter or '=' is pressed
+            } else if (key === 'Backspace') {
+                backspace(); // If the key is Backspace, remove the last digit
+            } else if ((key === 'c' || key === 'C') && screenValue !== '0') {
+                clearScreen(); // If the key is 'c' or 'C' and screen value is not '0', clear the entire screen
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>
